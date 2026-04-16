@@ -1,6 +1,28 @@
 const swaggerJSDoc = require("swagger-jsdoc");
 
 const PORT = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === "production";
+
+function createSwaggerServerUrl() {
+  if (process.env.SWAGGER_SERVER_URL) {
+    return process.env.SWAGGER_SERVER_URL;
+  }
+
+  if (process.env.APP_BASE_URL) {
+    return process.env.APP_BASE_URL;
+  }
+
+  if (process.env.WEBSITE_HOSTNAME) {
+    return `https://${process.env.WEBSITE_HOSTNAME}`;
+  }
+
+  const protocol = isProduction ? "https" : "http";
+  const host = process.env.HOST || "localhost";
+
+  return `${protocol}://${host}:${PORT}`;
+}
+
+const swaggerServerUrl = createSwaggerServerUrl();
 
 const options = {
   definition: {
@@ -13,8 +35,8 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${PORT}`,
-        description: "Servidor local",
+        url: swaggerServerUrl,
+        description: "Servidor de la API",
       },
     ],
     tags: [
