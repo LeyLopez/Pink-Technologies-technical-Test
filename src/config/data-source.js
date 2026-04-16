@@ -29,19 +29,31 @@ function createSslOptions() {
 }
 
 function createDatabaseOptions() {
+  const databaseUrl = process.env.DATABASE_URL;
   const dbPort = Number(process.env.DB_PORT || 5432);
 
-  return {
+  const commonOptions = {
     type: "postgres",
+    ssl: createSslOptions(),
+    synchronize: true,
+    logging: false,
+    entities: [ExternalDataEntity, UserEntity],
+  };
+
+  if (databaseUrl) {
+    return {
+      ...commonOptions,
+      url: databaseUrl,
+    };
+  }
+
+  return {
+    ...commonOptions,
     host: process.env.DB_HOST || "localhost",
     port: dbPort,
     username: process.env.DB_USER || "postgres",
     password: process.env.DB_PASSWORD || "postgres",
     database: process.env.DB_NAME || "external_data_db",
-    ssl: createSslOptions(),
-    synchronize: true,
-    logging: false,
-    entities: [ExternalDataEntity, UserEntity],
   };
 }
 
