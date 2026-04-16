@@ -1,5 +1,5 @@
 const axios = require("axios");
-const ExternalDataEntity = require("../entities/external-data.entity");
+const { getDataSource } = require("../config/data-source");
 
 function buildExternalUrl() {
   const baseUrl = process.env.EXTERNAL_API_BASE_URL;
@@ -13,26 +13,33 @@ function buildExternalUrl() {
   return `${baseUrl}${path}&apikey=${apiKey}`;
 }
 
-async function fetchAndTransformExternalData() {
-  const url = buildExternalUrl();
-  const { data } = await axios.get(url);
-
+function transformExternalPayload(data) {
   const exchangeRate = data["Realtime Currency Exchange Rate"];
 
   if (!exchangeRate) {
     throw new Error("Unexpected response format from external API");
   }
 
-  const mapped = new ExternalDataEntity({
+  return {
     base: exchangeRate["1. From_Currency Code"],
     currency: exchangeRate["3. To_Currency Code"],
     rate: Number(exchangeRate["5. Exchange Rate"]),
-    lastUpdate: exchangeRate["6. Last Refreshed"],
-  });
+    lastUpdate: new Date(exchangeRate["6. Last Refreshed"]),
+  };
+}
 
-  return [mapped];
+async function fetchAndTransformExternalData() {
+  const url = buildExternalUrl();
+  const { data } = await axios.get(url);
+  const mapped = transformExternalPayload(data);
+
+  const repository = getDataSource().getRepository("ExternalData");
+  const saved = await repository.save(repository.create(mapped));
+
+  return [saved];
 }
 
 module.exports = {
   fetchAndTransformExternalData,
+  transformExternalPayload,
 };

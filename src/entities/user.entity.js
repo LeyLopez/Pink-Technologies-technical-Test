@@ -1,32 +1,21 @@
 const { EntitySchema } = require("typeorm");
 
 module.exports = new EntitySchema({
-  name: "ExternalData",
-  tableName: "external_data",
+  name: "User",
+  tableName: "users",
   columns: {
     id: {
       type: Number,
       primary: true,
       generated: true,
     },
-    base: {
+    email: {
       type: String,
-      length: 10,
+      unique: true,
       nullable: false,
     },
-    currency: {
+    passwordHash: {
       type: String,
-      length: 10,
-      nullable: false,
-    },
-    rate: {
-      type: "decimal",
-      precision: 18,
-      scale: 6,
-      nullable: false,
-    },
-    lastUpdate: {
-      type: "timestamp",
       nullable: false,
     },
     createdAt: {
