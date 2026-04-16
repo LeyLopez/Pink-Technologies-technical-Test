@@ -132,6 +132,8 @@ DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_NAME=external_data_db
+DB_SSL=false
+DB_SSL_REJECT_UNAUTHORIZED=true
 JWT_SECRET=change_this_secret
 JWT_EXPIRES_IN=1h
 ```
@@ -175,6 +177,7 @@ Variables minimas en Azure:
 - `EXTERNAL_API_PATH`
 - `ALPHA_VANTAGE_API_KEY`
 - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
+- `DB_SSL`, `DB_SSL_REJECT_UNAUTHORIZED`
 - `JWT_SECRET`, `JWT_EXPIRES_IN`
 
 ## Estado de requisitos obligatorios
